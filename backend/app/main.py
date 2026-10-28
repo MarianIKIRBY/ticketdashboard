@@ -7,6 +7,8 @@ from sqlalchemy import text
 
 from app.db.database import get_db
 from app.routers import tickets, usuarios, aulas
+from app.core.deps import get_current_user
+from app.routers import tickets, usuarios, aulas
 
 app = FastAPI(title="API - Sistema de Gestión de Tickets")
 
@@ -26,9 +28,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(tickets.router)
-app.include_router(usuarios.router)
-app.include_router(aulas.router)
+requiere_login = [Depends(get_current_user)]
+
+app.include_router(tickets.router, dependencies=requiere_login)
+app.include_router(usuarios.router, dependencies=requiere_login)
+app.include_router(aulas.router, dependencies=requiere_login)
 
 
 @app.get("/")
